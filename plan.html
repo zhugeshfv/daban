@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打板方案 v1 · 主板专用</title>
+<style>
+  :root{
+    --bg:#fdfaf7; --card:#ffffff; --ink:#2a2438; --sub:#8a8398;
+    --pink:#e0669b; --pink-soft:#fce8f0; --violet:#7c6bd6; --violet-soft:#eeeafe;
+    --green:#2f9e73; --green-soft:#e6f6ef; --red:#d64550; --red-soft:#fdeaea;
+    --amber:#c98a1a; --amber-soft:#fdf3dd; --line:#ece7f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    line-height:1.65; padding:32px 18px 64px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto}
+  header{text-align:center;margin-bottom:28px}
+  .badge{display:inline-block;background:var(--pink-soft);color:var(--pink);
+    font-size:12px;font-weight:700;letter-spacing:.14em;padding:6px 14px;border-radius:99px;margin-bottom:14px}
+  h1{font-size:30px;font-weight:800;letter-spacing:-.5px}
+  h1 span{color:var(--pink)}
+  .meta{margin-top:10px;font-size:13px;color:var(--sub)}
+  .meta b{color:var(--ink);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  .stat .k{font-size:12px;color:var(--sub);margin-bottom:6px}
+  .stat .v{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .v.g{color:var(--green)}
+  .stat .v.p{color:var(--pink)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 22px 8px;margin-bottom:18px;box-shadow:0 2px 14px rgba(90,60,120,.04)}
+  .card h2{font-size:17px;font-weight:800;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .num{display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:9px;background:var(--violet-soft);
+    color:var(--violet);font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+  .card .sub{font-size:12.5px;color:var(--sub);margin:2px 0 14px 36px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:14px}
+  th{text-align:left;font-size:11.5px;letter-spacing:.08em;color:var(--sub);
+    font-weight:700;padding:0 10px 8px;border-bottom:1px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid #f6f2fa;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .why{color:var(--sub);font-size:12.5px}
+
+  .tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:8px;white-space:nowrap}
+  .t-good{background:var(--green-soft);color:var(--green)}
+  .t-warn{background:var(--amber-soft);color:var(--amber)}
+  .t-bad{background:var(--red-soft);color:var(--red)}
+  .t-info{background:var(--violet-soft);color:var(--violet)}
+
+  .flow{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 18px 36px}
+  .flow div{flex:1;min-width:140px;background:var(--bg);border:1px dashed var(--line);
+    border-radius:12px;padding:10px 12px;font-size:12.5px}
+  .flow b{display:block;font-size:13.5px;margin-bottom:2px}
+
+  .alert{border-radius:14px;padding:14px 16px;font-size:13.5px;margin-bottom:18px;border:1px solid}
+  .alert.red{background:var(--red-soft);border-color:#f7cdd0;color:#8d2a33}
+  .alert.amber{background:var(--amber-soft);border-color:#f2e0b6;color:#7d5a10}
+  .alert b{font-weight:800}
+
+  .cand{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:6px 0 18px 0}
+  .c{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px 16px;position:relative}
+  .c .name{font-weight:800;font-size:15px}
+  .c .code{font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums}
+  .c .line{font-size:12.5px;color:var(--sub);margin-top:6px}
+  .c.star{border-color:#f5c6db;background:var(--pink-soft)}
+  .c .st{position:absolute;top:12px;right:12px;font-size:11px;font-weight:800}
+  .c.star .st{color:var(--pink)}
+  .c.no{opacity:.62}
+  .c.no .st{color:var(--red)}
+
+  footer{margin-top:30px;text-align:center;font-size:12px;color:var(--sub);line-height:1.9}
+  @media(max-width:640px){
+    .grid{grid-template-columns:1fr}
+    h1{font-size:24px}
+    body{padding:22px 14px 48px}
+    .card{padding:18px 16px 4px}
+    .sub,.flow{margin-left:0}
+    table{font-size:13px}
+    td,th{padding:8px 6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="badge">主板专用 · 已剔除创业板 / 科创板</div>
+    <h1>打板方案 <span>v1</span></h1>
+    <div class="meta">
+      样本区间 <b>2025-10-16 → 2026-10-28</b> ｜ 主板涨停事件 <b>17,652</b> ｜ 交易日 <b>251</b> ｜ 生成于 2026-10-28 21:50
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="stat">
+      <div class="k">可执行组次日开盘收益（中位）</div>
+      <div class="v g">+1.48%</div>
+      <div class="k" style="margin-top:4px">n = 1,773 ｜ 胜率 73.4%<br><span style="color:#d64550">已剔除买不进的一字板</span></div>
+    </div>
+    <div class="stat">
+      <div class="k">扣掉炸板成本后的净期望</div>
+      <div class="v g">≈ +0.48%</div>
+      <div class="k" style="margin-top:4px">每次交易 ｜ 已含 0.15% 成本</div>
+    </div>
+    <div class="stat">
+      <div class="k">二板晋级率 / 首板晋级率</div>
+      <div class="v p">33.2% <span style="font-size:14px;color:var(--sub)">/ 18.2%</span></div>
+      <div class="k" style="margin-top:4px">首板 ≈ 抛硬币，二板确定性翻倍</div>
+    </div>
+  </div>
+
+  <section class="card" id="matrix">
+<div class="sec-title"><span class="num">00</span>决策维度总表</div>
+<div class="sub">一张表看清：什么是验证过的、什么是逻辑必然、什么已经被数据打死、什么是我们的盲区</div>
+
+<h3 style="color:#2f9e73;margin:18px 0 8px">✔ 已验证有效（可以依赖）</h3>
+<table>
+<tr><th>维度</th><th>规则</th><th>实测依据</th></tr>
+<tr><td>环境</td><td>炸板率 × 涨停家数 <b>双维度矩阵</b>（看板顶部实时显示）</td><td>最佳格 +2.98%／胜率 69%；最差格 +0.00%／49%，相邻格差 3 个点</td></tr>
+<tr><td>连板高度</td><td><b>只做 2 板以上</b>，1 板不碰</td><td>2板 +2.4% ／ 1板 +0.9%（扣费白干）</td></tr>
+<tr><td>盘中换手</td><td>先摸到 +8%，再看累计换手（分档定仓位，见下表）</td><td>全天换手 &lt;4% 封板率 91-99%、次日 +3.8~6.6%；&gt;20% 封板率仅 45%、次日 -1.37%</td></tr>
+<tr><td>炸板次数</td><td><b>0 次</b>，炸过就降级</td><td>炸板当天 -5.08%，次日开盘 -7.41%，97.7% 亏</td></tr>
+<tr><td>板块热度</td><td>≥10 只涨停才算主线（加权项）</td><td>控制变量后边际 +0.71 个点</td></tr>
+<tr><td>卖出方式</td><td>2 板以上挂涨停价卖，14:50 未成交收盘卖</td><td>2板 +3.10% vs 开盘卖 +2.63%；3板 +4.03% vs +3.31%</td></tr>
+</table>
+
+<h3 style="color:#c8901f;margin:18px 0 8px">■ 硬约束（逻辑必然，不需要回测）</h3>
+<table>
+<tr><th>约束</th><th>后果</th></tr>
+<tr><td>封单/成交 &gt; 100%</td><td>一字板，挂单也排不上，标 ⚠抢不到（不降等级）</td></tr>
+<tr><td>10 日累计涨幅 &gt; 70%</td><td>逼近交易所「10日±100%」严重异动红线，大资金不敢再拉</td></tr>
+<tr><td>T+1</td><td>当天买入当天不能卖，挂涨停价成交即终局，不能撤</td></tr>
+<tr><td>连续 3 日 ±20%</td><td>异常波动，会触发公告/问询，短线资金回避</td></tr>
+</table>
+
+<h3 style="color:#d64550;margin:18px 0 8px">✘ 已被数据推翻（别再想）</h3>
+<table>
+<tr><th>说法</th><th>实测结果</th></tr>
+<tr><td>同音 / 字辈扩散（洋字辈、新华系）</td><td>18,131 个样本超额 +0.01%；只看 ≥3 连板龙头也是 +0.01%，跑赢大盘 48%。<b>是事后叙事，不是原因</b></td></tr>
+<tr><td>1 板也能做</td><td>1 板换手闸门几乎无效（+0.79%~+1.00%，差 0.21 点）</td></tr>
+<tr><td>股价要在 20-50 元</td><td>各档差异 &lt;1 个点，无区分度</td></tr>
+<tr><td>最优组 +2.75%</td><td>含 892 个买不进的一字板；可执行组只有 +1.48%</td></tr>
+</table>
+
+<h3 style="color:#8a8398;margin:18px 0 8px">○ 盲区（无法验证，只作提示不作决策）</h3>
+<table>
+<tr><th>盲区</th><th>为什么</th></tr>
+<tr><td>概念题材（机器人、AI 等跨行业热点）</td><td>我们只有行业分类；跨行业题材需概念归属，历史数据拿不到，无法回测</td></tr>
+<tr><td>地域炒作</td><td>同上，无历史标签</td></tr>
+<tr><td>新闻 / 公告 / 政策</td><td>无法量化，且事后归因严重</td></tr>
+<tr><td>游资席位（龙虎榜）</td><td>接口只保留约 20 个交易日</td></tr>
+<tr><td>大盘趋势 / 指数位置</td><td>尚未做分层验证</td></tr>
+</table>
+<div class="hint">盲区里的东西可以看、可以用来理解行情，但<b>不许拿来当买入理由</b>——因为我们无法证明它赚钱。</div>
+</section>
+<div class="card">
+    <h2><span class="num">1</span>盘前筛股 <span style="font-weight:500;font-size:13px;color:var(--sub);margin-left:6px">9:00 – 9:25</span></h2>
+    <div class="sub">只从昨日已封板的池子里找，条件一条都不能少</div>
+    <table>
+      <tr><th style="width:26%">条件</th><th style="width:24%">阈值</th><th>实测依据</th></tr>
+      <tr><td>来源</td><td class="n">昨日涨停池</td><td class="why">只做已经封住的，不猜</td></tr>
+      <tr><td>连板数</td><td class="n">≥ 2 板</td><td class="why">2 板晋级 33.2%，首板只有 18.2%（n=13,544）</td></tr>
+      <tr><td>炸板次数</td><td class="n">= 0</td><td class="why">一次封死组次日 +1.44%；炸板组中位 <b style="color:var(--red)">-7.41%</b></td></tr>
+      <tr><td>封单 / 成交额</td><td class="n">20% – 100%</td><td class="why">该档次日 +2.12%；<b>&gt;100% 基本是一字板，买不进</b></td></tr>
+      <tr><td>流通市值</td><td class="n">30 – 300 亿</td><td class="why">100–300 亿档表现最好（20 日样本，弱证据）</td></tr>
+      <tr><td>板块热度</td><td class="n">≥ 10 只涨停</td><td class="why">该档次日 +1.76%、胜率 70.7%（n=2545）；<b>3-4 只与孤狼板无差别</b>（+1.06% vs +1.05%）</td></tr>
+      <tr><td>龙头地位</td><td class="n">加分项，非门槛</td><td class="why">板块 ≥6 只时龙头 +1.94% vs 跟风 +1.26%；首板龙头反不如跟风</td></tr>
+      <tr><td>剔除板块</td><td class="n">300 / 301 / 688 / 689</td><td class="why">无权限，且 20% 涨跌幅 = 风险翻倍</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span>盘中买入 <span style="font-weight:500;font-size:13px;color:var(--sub);margin-left:6px">9:30 – 10:30</span></h2>
+    <div class="sub">全篇最要紧的一步：T+1，买进去当天卖不掉，这就是终局判断 · <b style="color:#d64550">只做 2 板及以上</b></div>
+    <div class="flow">
+      <div><b>① 只做 2 板以上</b>1 板次日仅 +0.9%，扣费白干</div>
+      <div><b>② 必须先摸到 +8%</b>没摸到的，换手再低也不买（那是没人要，不是筹码锁得稳）</div>
+      <div><b>③ 看此刻累计换手</b>下单前的实时值，不是收盘值</div>
+      <div><b>④ 按换手定仓位</b>换手越高，封板率越低，仓位越轻</div>
+    </div>
+    <table>
+      <tr><th style="width:30%">当前累计换手</th><th style="width:22%">动作</th><th>为什么</th></tr>
+      <tr><td class="n">&gt; 5%</td><td><span class="tag t-bad">绝对不做</span></td><td class="why">对应全天 &gt;20%：封板率仅 <b>45%</b>，次日期望 <b>-1.37%</b></td></tr>
+      <tr><td class="n">2.5% – 5%</td><td><span class="tag t-warn">只做最优一只</span></td><td class="why">对应全天 10-20%：封板率 60-73%，期望 +0.04%~+0.9%，基本白干</td></tr>
+      <tr><td class="n">2% – 2.5%</td><td><span class="tag t-warn">半仓</span></td><td class="why">对应全天 8-10%：封板率 <b>73-80%</b>，期望 +0.9%~+1.5%，正期望但优势变薄</td></tr>
+      <tr><td class="n">1.5% – 2%</td><td><span class="tag t-good">正常仓</span></td><td class="why">对应全天 5-8%：封板率 <b>84%</b>，次日 +2.23%</td></tr>
+      <tr><td class="n">&lt; 1.5%</td><td><span class="tag t-good">正常仓 · 最优</span></td><td class="why">对应全天 &lt;4%：封板率 <b>91-99%</b>，次日 +3.8%~+6.6%，胜率 72-85%</td></tr>
+      <tr><td class="n">&nbsp;&nbsp;└ &lt; 0.5%</td><td><span class="tag t-info">多半买不到</span></td><td class="why">收益最高但基本是一字板，看得见吃不着</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span>卖出 <span style="font-weight:500;font-size:13px;color:var(--sub);margin-left:6px">次日 9:25 – 9:30</span></h2>
+    <div class="sub">不恋战，持股过夜没有额外收益</div>
+    <table>
+      <tr><th style="width:30%">情形</th><th style="width:22%">动作</th><th>依据</th></tr>
+      <tr><td><b>1 板</b></td><td class="n">竞价挂开盘价卖</td><td class="why">开盘卖 +1.55%；等上板只多 0.16 个点，不值得赌波动</td></tr>
+      <tr><td><b>2 板及以上</b></td><td class="n">挂涨停价卖单</td><td class="why">次日摸涨停概率 37%~48%，摸到就是 +10%；没摸到收盘卖。3 板期望 +4.03% vs 开盘卖 +3.31%</td></tr>
+      <tr><td>低开 &gt; -3%</td><td class="n">照卖</td><td class="why">1 板最惨一笔 -30.8%，不接第二刀</td></tr>
+      <tr><td>一字跌停</td><td><span class="tag t-bad">卖不掉</span></td><td class="why">这是本策略的最大风险，只能认</td></tr>
+    </table>
+    <div class="sub" style="margin-top:18px">卖出时点：按连板高度分档（全年 17,563 个有次日数据的主板样本）</div>
+    <table>
+      <tr><th>连板</th><th>次日摸涨停</th><th>开盘卖</th><th>挂涨停单<br><span style="font-weight:400;font-size:11px">没摸到就收盘卖</span></th><th>用哪个</th></tr>
+      <tr><td>1 板</td><td class="n">21.8%</td><td class="n">+1.55%</td><td class="n">+1.71%</td>
+          <td><span class="tag t-info">开盘卖</span> <span class="why">差别太小</span></td></tr>
+      <tr><td>2 板</td><td class="n">37.1%</td><td class="n">+2.63%</td><td class="n">+3.10%</td>
+          <td><span class="tag t-good">挂涨停单</span></td></tr>
+      <tr><td><b>3 板</b></td><td class="n">47.9%</td><td class="n">+3.31%</td><td class="n"><b>+4.03%</b></td>
+          <td><span class="tag t-good">挂涨停单 ★</span> <span class="why">优势最大</span></td></tr>
+      <tr><td>4 板</td><td class="n">46.8%</td><td class="n">+3.63%</td><td class="n">+4.19%</td>
+          <td><span class="tag t-good">挂涨停单</span></td></tr>
+      <tr><td>5 板+</td><td class="n">45.2%</td><td class="n">+3.64%</td><td class="n">+3.82%</td>
+          <td><span class="tag t-good">挂涨停单</span></td></tr>
+    </table>
+    <div class="hint"><b>代价必须知道</b>：3 板里没摸到涨停的那 52%，开盘均值 +0.65%、收盘均值 <b>-1.46%</b>。
+    「挂涨停单」那 +4.03% 是这个均值——<b>不是稳稳赚 4%，是一半拿 +10%、一半倒亏 1.5%</b>。<br>
+    操作：9:30 后挂涨停价卖出单，14:50 还没成交就按收盘价走。<b>1 板不要这么玩</b>，摸涨停只有 21.8%，多赚 0.16 个点不值那个波动。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">4</span>风控红线</h2>
+    <div class="sub">四条，破一条就停手</div>
+    <table>
+      <tr><td style="width:34%">单票仓位</td><td class="n">≤ 20%</td><td class="why">一次炸板亏 7.4%，重仓会被打穿</td></tr>
+      <tr><td>单日最多</td><td class="n">2 只</td><td class="why">机会天天有，不必一天赌完</td></tr>
+      <tr><td>连续 2 次炸板</td><td class="n">停手复盘</td><td class="why">大概率是违反了换手闸门</td></tr>
+      <tr><td>单月回撤 &gt; 8%</td><td class="n">暂停，重跑参数</td><td class="why">说明这批行情换了，阈值要重算</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">5</span>四个因素各值多少钱</h2>
+    <div class="sub">同一套数据里每个因素能拉开多大差距（主板全年 · 17,555 样本）</div>
+    <table>
+      <tr><th style="width:22%">因素</th><th style="width:26%">最好的一档</th><th style="width:24%">最差的一档</th><th>差距</th></tr>
+      <tr><td>换手率</td><td class="n">+2.57%</td><td class="n">0.00%</td><td class="n"><b style="color:var(--pink)">2.57 点</b>　★主菜</td></tr>
+      <tr><td>连板高度</td><td class="n">+4.99%（5 板+）</td><td class="n">+0.96%（首板）</td><td class="n"><b>4.03 点</b>　★主菜</td></tr>
+      <tr><td>板块热度</td><td class="n">+1.76%（≥10 只）</td><td class="n">+1.05%（孤狼）</td><td class="n">0.71 点　配菜</td></tr>
+      <tr><td>龙头地位</td><td class="n">+1.94%（热板块内）</td><td class="n">+1.26%（同板块跟风）</td><td class="n">0.68 点　配菜</td></tr>
+    </table>
+    <div class="alert amber" style="margin-top:2px">
+      <b>换手率和连板高度是主菜，板块和龙头只是配菜。</b>为了等一个热板块而放宽换手率条件，是赔本买卖。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">6</span>今日候选（10-28）</h2>
+    <div class="sub">能进名单的只有 2 只够格，其余标注淘汰原因</div>
+    <div class="cand">
+      <div class="c star">
+        <div class="st">★ 首选</div>
+        <div class="name">光洋股份</div>
+        <div class="code">002708</div>
+        <div class="line">2 板 ｜ 换手 3.87% ｜ 0 炸板<br>封单/成交 50.2% ｜ 09:30 首封</div>
+      </div>
+      <div class="c">
+        <div class="st">○ 备选</div>
+        <div class="name">茂业商业</div>
+        <div class="code">600828</div>
+        <div class="line">1 板 ｜ 换手 1.57% ｜ 0 炸板<br>封单/成交 16.2%</div>
+      </div>
+      <div class="c">
+        <div class="st">○ 备选</div>
+        <div class="name">原尚股份</div>
+        <div class="code">603813</div>
+        <div class="line">1 板 ｜ 换手 1.89% ｜ 0 炸板<br>封单/成交 11.9% ｜ 10:34 首封</div>
+      </div>
+      <div class="c no">
+        <div class="st">✕ 淘汰</div>
+        <div class="name">上海九百</div>
+        <div class="code">600838</div>
+        <div class="line">5 板 ｜ 换手 7.49%<br>换手已超标一倍以上</div>
+      </div>
+      <div class="c no">
+        <div class="st">✕ 淘汰</div>
+        <div class="name">深赛格</div>
+        <div class="code">000058</div>
+        <div class="line">1 板 ｜ 换手 0.76%<br>封单/成交 679% = 一字板买不进</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert red">
+    <b>先说清楚：这不是"明天会涨"的预测。</b>这是"如果今天它再次封板、且换手够低，可以试一手"的条件单。两只票今天全部不满足触发条件，今天就空仓 —— 空仓不是失败，是这套策略的常态。
+  </div>
+
+  <div class="alert amber">
+    <b>这套只在数据上跑过，没在实盘跑过一天。</b>第一周只记数据不图赚钱，重点记录三个数：几点挂单、几点成交、成交后 10 分钟涨跌。等"挂单成交率"这个数字出来，才能把 +1.48% 再修正一次。
+  </div>
+
+  <div class="card">
+    <h2><span class="num">7</span>被数据推翻的旧说法</h2>
+    <div class="sub">来源是手写笔记和他人方案，逐条实测后不成立</div>
+    <table>
+      <tr><th style="width:34%">旧说法</th><th>实测结果</th></tr>
+      <tr><td>"封板越早越强"</td><td class="why">只有次日高开成立；10:30 前封板的炸板率 33.0%，13:30 后反而只有 17.2%</td></tr>
+      <tr><td>"封单占成交额 5% 以上可靠"</td><td class="why">5–20% 这档次日 -0.22%，等于没筛；真正有效的是 20% 以上</td></tr>
+      <tr><td>"同板块 3 只以上算联动"</td><td class="why">全年 3-4 只（+1.06%）与孤狼板（+1.05%）几乎无差别，必须热到 ≥10 只（+1.76%）才有效</td></tr>
+      <tr><td>"只做龙头"</td><td class="why">龙头 +1.28% vs 跟风 +1.10%，胜率完全相同（63.8% vs 63.9%）；首板里龙头 +0.91% 还略输跟风 +1.01%</td></tr>
+      <tr><td>"中小市值更好"</td><td class="why">30–100 亿最差，100–300 亿最好</td></tr>
+      <tr><td>"股价别太高"</td><td class="why">无区分度：&lt;5元 +2.12%、5-10元 +1.88%、20-50元 +1.63%、&gt;100元 +1.86%，各档差不到 1 个点</td></tr>
+      <tr><td>"最优组 +2.75%"</td><td class="why">这里面 892/2665 是一字板占的功劳（+5.09%），但你一手都买不进；剔除后真实可执行只有 <b>+1.48%</b>（n=1773，胜率 73.4%）</td></tr>
+      <tr><td>"开板挂涨停价能捡便宜"</td><td class="why">开板后回封率 65.3%，赢 +2.04% 输 -7.41%，期望 <b>-1.24%</b>；即使算上开板便宜 0.8% 的成本，仍是 -0.44%，负期望</td></tr>
+      <tr><td>"位置分位 ≥0.9 是负期望"</td><td class="why">反向：高位组次日 +1.24%，胜率 63.9%，是中位组的 2 倍</td></tr>
+      <tr><td>"竞价承接度可判断接力日"</td><td class="why">无预测力，承接最好和最差的 25% 收益几乎无差</td></tr>
+      <tr><td>"持股过夜收益更高"</td><td class="why">开盘卖 +1.20% vs 收盘卖 +1.17%，站不住</td></tr>
+    </table>
+  </div>
+
+  <footer>
+    数据：baostock 全市场日线 5,224 只 · 东财涨停池 / 炸板池 · 5 分钟线<br>
+    口径：当日涨停价买入 → 次日开盘价卖出为主口径（四种卖法已实测对比） · 已剔除北交所（数据源缺失）<br>
+    <b style="color:var(--red)">本页为方法验证记录，不构成投资建议。打板单次最大回撤实测 -26.4%。</b>
+  </footer>
+
+</div>
+<div style="text-align:center;font-size:11px;color:#8a8398;padding:14px">静态快照 2026-10-28 22:30 · 每个交易日 16:30 后自动更新</div></body>
+</html>
