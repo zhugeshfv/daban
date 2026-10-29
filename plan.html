@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>打板方案 v1 · 主板专用</title>
+<title>打板方案 v2 · 主板专用</title>
 <style>
   :root{
     --bg:#fdfaf7; --card:#ffffff; --ink:#2a2438; --sub:#8a8398;
@@ -95,7 +95,7 @@
     <div class="badge">主板专用 · 已剔除创业板 / 科创板</div>
     <h1>打板方案 <span>v1</span></h1>
     <div class="meta">
-      样本区间 <b>2025-10-16 → 2026-10-28</b> ｜ 主板涨停事件 <b>17,652</b> ｜ 交易日 <b>251</b> ｜ 生成于 2026-10-29 10:12
+      样本区间 <b>2025-10-16 → 2026-10-28</b> ｜ 主板涨停事件 <b>17,652</b> ｜ 交易日 <b>251</b> ｜ 生成于 2026-10-29 12:40
     </div>
   </header>
 
@@ -117,7 +117,15 @@
     </div>
   </div>
 
-  <section class="card" id="matrix">
+  <section class="card" style="background:#fff4e6;border:2px solid #f0c27a">
+<div style="font-size:16px;font-weight:800;color:#b06a00;margin-bottom:8px">⚠ v2 最重要的修订：这份方案的收益数字，一半是买不到的</div>
+<div style="font-size:13.5px;line-height:1.95;color:#5a4a33">
+历史统计里「换手 &lt;3% 期望 +6.64%」这类漂亮数字，前提是<b>你能在涨停价买到</b>。但换手低恰恰意味着封单厚、没人卖——<b>你也买不进</b>。<br>
+换手率与「能不能买到」是直接冲突的：<b>换手越低越买不到，能买到的必然换手偏高</b>。<br>
+所以真正可执行的期望只有 <b>+2.23%</b>（10:30 换手 1.5%–2% 那一档，封板率 84%）。<br>
+<b>请把这一条当成读整份方案的前提</b>：凡是换手低于 1.5% 的档位，都是给持仓者看卖点的，不是给你的买点。
+</div></section>
+<section class="card" id="matrix">
 <div class="sec-title"><span class="num">00</span>决策维度总表</div>
 <div class="sub">一张表看清：什么是验证过的、什么是逻辑必然、什么已经被数据打死、什么是我们的盲区</div>
 
@@ -307,6 +315,8 @@
       <tr><td>"只做龙头"</td><td class="why">龙头 +1.28% vs 跟风 +1.10%，胜率完全相同（63.8% vs 63.9%）；首板里龙头 +0.91% 还略输跟风 +1.01%</td></tr>
       <tr><td>"中小市值更好"</td><td class="why">30–100 亿最差，100–300 亿最好</td></tr>
       <tr><td>"股价别太高"</td><td class="why">无区分度：&lt;5元 +2.12%、5-10元 +1.88%、20-50元 +1.63%、&gt;100元 +1.86%，各档差不到 1 个点</td></tr>
+      <tr><td>“断板反包也算强”</td><td class="why">断板反包次日 <b>+0.55%</b>、胜率 56.1%，<b>还不如真首板（+0.74%）</b>；其中「断 1 天就反包」只有 +0.13%、胜率 51.4%（等于抛硬币）；「前面 3 板断掉后再反包」是 <b>-0.43%、44.6%</b>，明确亏钱。连续板是筹码越锁越紧，断板反包是筹码刚换过手，两回事。</td></tr>
+      
       <tr><td>"最优组 +2.75%"</td><td class="why">这里面 892/2665 是一字板占的功劳（+5.09%），但你一手都买不进；剔除后真实可执行只有 <b>+1.48%</b>（n=1773，胜率 73.4%）</td></tr>
       <tr><td>"开板挂涨停价能捡便宜"</td><td class="why">开板后回封率 65.3%，赢 +2.04% 输 -7.41%，期望 <b>-1.24%</b>；即使算上开板便宜 0.8% 的成本，仍是 -0.44%，负期望</td></tr>
       <tr><td>"位置分位 ≥0.9 是负期望"</td><td class="why">反向：高位组次日 +1.24%，胜率 63.9%，是中位组的 2 倍</td></tr>
@@ -322,5 +332,5 @@
   </footer>
 
 </div>
-<div style="text-align:center;font-size:11px;color:#8a8398;padding:14px">静态快照 2026-10-29 12:12 · 每个交易日 16:30 后自动更新</div></body>
+<div style="text-align:center;font-size:11px;color:#8a8398;padding:14px">静态快照 2026-10-29 12:19 · 每个交易日 16:30 后自动更新</div></body>
 </html>
